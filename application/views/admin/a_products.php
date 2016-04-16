@@ -25,13 +25,13 @@
 				</td>
 			</tr>
 			<tr>
-				<td class=""><b></b></td>
+				<td class=""><b>Размер</b></td>
 				<td>
 				
 				</td>
 			</tr>
 			<tr>
-				<td class=""><b></b></td>
+				<td class=""><b>Цвет</b></td>
 				<td>
 				
 				</td>
