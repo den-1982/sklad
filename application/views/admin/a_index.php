@@ -1,0 +1,1 @@
+<div class="body">	<h1 class="title"><?=$h1?></h1>		</div><!-- END BODY -->
