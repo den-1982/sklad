@@ -187,7 +187,6 @@ class Admin extends CI_Controller {
 						break;
 					case 'delete_node':
 						$node = isset($_POST['id']) && $_POST['id'] !== '#' ? (int)$_POST['id'] : 0;
-						
 						# проверка (есть ли вложенные категории и продукты)
 						$result = $this->categoryModel->delCategory($node);
 						if ($result){
@@ -409,8 +408,22 @@ class Admin extends CI_Controller {
 		$data['parent']	= isset($_GET['parent']) ? abs((int)$_GET['parent']) : 0;
 		
 		if (isset($_POST['getFormAddProduct'])){
+			$data['category_id'] = isset($_POST['category_id']) ? abs((int)$_POST['category_id']) : 0;
 			echo json_encode(
-				array('form_add_product' => $this->load->view('/admin/service/form-add-product.php', null, true))
+				array(
+					'form_add_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-product.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getFormEditProduct'])){
+			$product_id = isset($_POST['product_id']) ? abs((int)$_POST['product_id']): 0;
+			$data['product'] = $this->productModel->getProduct($product_id);
+			echo json_encode(
+				array(
+					'form_edit_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-product.php', $data, true))
+				)
 			);
 			exit;
 		}
@@ -418,56 +431,64 @@ class Admin extends CI_Controller {
 		if (isset($_POST['get_products_of_categories'])){
 			$data['products'] = $this->productModel->getProductsOfCategories($_POST['get_products_of_categories']);
 			if (isset($_POST['format']) && $_POST['format'] == 'tr'){
-				$data['products'] = preg_replace('/\s+/', ' ', $this->load->view('/admin/service/products-format-tr', $data, true));
+				$data['products'] = preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/products-format-tr', $data, true));
 			}
-			$response['products'] = $data['products'];
-			unset($data);
 			
 			header('Content-Type: application/json; charset=utf-8');
-			echo json_encode($response); 
+			echo json_encode(array('products' => $data['products']));
 			exit;
 		}
 		
-		
+		// ?
 		if (isset($_POST['getProductOfCategory'])){
 			$products = $this->productModel->getProducts($_POST['getProductOfCategory']);
 			echo json_encode($products); 
 			exit;
 		}
-		
-		if ( isset($_POST['getFiltersOfCategory']) ){
-			echo json_encode(
-				$this->filterModel->getFiltersOfCategory($_POST['getFiltersOfCategory'])
-			); 
-			exit;
-		}
+	
 		
 		if (isset($_POST['product_order'])){
 			$this->productModel->sortOrderProduct();
 			exit;
 		}
-		
-		if (isset($_POST['add'])){
-			$this->productModel->addProduct(); 
-			redirect($data['path'].'?parent='.$data['parent']);
+
+		if (isset($_POST['add_product'])){
+			echo json_encode(
+				$this->productModel->addProduct()
+			);
 			exit;
 		}
 		
-		if (isset($_POST['edit'])){
-			$res = $this->productModel->updateProduct();
-			redirect($data['path'].'?parent='.$data['parent']);
+		if (isset($_POST['update_product'])){
+			echo json_encode(
+				$this->productModel->updateProduct()
+			);
 			exit;
 		}
 
-		if (isset($_GET['delete'])){
-			$this->productModel->delProduct($_GET['delete']);
-			redirect($data['path'].'?parent='.$data['parent']);
+		if (isset($_POST['delete_product'])){
+			echo json_encode(
+				$this->productModel->delProduct($_POST['delete_product'])
+			);
 			exit;
 		}
 		
-		$data['act'] = 'add';
-		
 		$this->_view('a_products', $data);
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// INVOICE
+	public function Invoice($type = '')
+	{
+		$data = &$this->data;
+
+		$data['path']		= '/admin/invoice/';
+		$data['action']   	= 'invoice';
+		$data['act']      	= 'all';
+		$data['h1']     	= 'Накладная';
+		
+		
+		
+		
+		$this->_view('a_invoices', $data);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// FILTER
 	public function Filter()
@@ -526,19 +547,6 @@ class Admin extends CI_Controller {
 		$data['filters'] = $this->filterModel->getFilters();
 
 		$this->_view('a_filter', $data);
-	}
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// INVOICE
-	public function Invoice()
-	{
-		$data = &$this->data;
-
-		$data['path']		= '/admin/invoice/';
-		$data['action']   	= 'invoice';
-		$data['act']      	= 'all';
-		$data['h1']     	= 'Накладная';
-		
-		
-		$this->_view('a_invoice', $data);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SETTINGS
 	public function Settings()

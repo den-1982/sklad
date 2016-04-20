@@ -36,11 +36,10 @@
 				settings = $.extend({}, defaults, options);
 
 				var _this = $(this),
-					data = _this.data('dialog'),
-					html = this.outerHTML;
-
+					html = _this.clone(true);
+				
 				// INIT есле уже есть
-				if (data) return this;
+				if (_this.data('dialog')) return this;
 
 				var dialogBox = $(
 				'<div data-dialog-box="'+index+'">'+

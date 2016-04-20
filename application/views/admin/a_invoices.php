@@ -1,6 +1,6 @@
 <div class="body">
 	
-	<h1 class="title"><?=$h1?></h1>
+	<h1 class="title"><?=$h1?> <?=time()?></h1>
 	
 	<div class="nav">
 		<div class="fleft"></div>
@@ -13,34 +13,19 @@
 	<table class="table-1">
 		<thead>
 			<tr>
-				<td class="small">Категории</td>
-				<td class="">Товары</td>
+				<td class="small">№</td>
+				<td class="small">
+					<a class="icon-save send-order" data-sortable="send-order" title="применить сортировку"></a>
+				</td>
+				<td>Название</td>
+				<td class="small nowrap">Серийный номер</td>
+				<td class="small"></td>
+				<td class="small">
+					<a class="link_add" data-bind="add_product" title="Добавить товар"></a>
+				</td>
 			</tr>
 		</thead>
-		<tbody>
-			<td class="left top">
-				<div id="tree-category" class="tree"></div>
-			</td>
-			<td class="left top">
-				<table class="table-1" data-scroll="head">
-					<thead>
-						<tr>
-							<td class="small">№</td>
-							<td class="small">
-								<a class="icon-save send-order" data-sortable="send-order" title="применить сортировку"></a>
-							</td>
-							<td>Название</td>
-							<td class="small nowrap">Серийный номер</td>
-							<td class="small"></td>
-							<td class="small">
-								<a class="link_add" data-bind="add_product" title="Добавить товар"></a>
-							</td>
-						</tr>
-					</thead>
-					<tbody id="products" data-sortable="body"></tbody>
-				</table>
-			</td>
-		</tbody>
+		<tbody id="products" data-sortable="body"></tbody>
 	</table>
 	
 </div><!--END ID=BODY-->

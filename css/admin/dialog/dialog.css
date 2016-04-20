@@ -49,7 +49,7 @@ div[data-dialog-box]{
 	left:0;
 	width:100%;
 	height:35px;
-	padding: 0 35px 0 5px;
+	padding: 0 35px 0 10px;
 	background: #333;
 	cursor:default;
 }

@@ -34,7 +34,7 @@ class categoryModel extends CI_Model
 	{
 		$id = abs((int)$id);
 		$categories	= $this->db->query('SELECT COUNT(*) AS cnt FROM category_struct WHERE pid = "'.$id.'"')->row()->cnt;
-		$products	= $this->db->query('SELECT COUNT(*) AS cnt FROM products WHERE parent = "'.$id.'"')->row()->cnt;
+		$products	= $this->db->query('SELECT COUNT(*) AS cnt FROM products WHERE category_id = "'.$id.'"')->row()->cnt;
 		
 		$response = array();
 		

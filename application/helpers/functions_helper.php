@@ -4,9 +4,16 @@
 --------------------------------------------------------------*/
 function clean($str = '', $tag = false, $sql = false)
 {
+	$CI = &get_instance();
+	
 	if ($tag) $str = strip_tags($str);
 	$str = trim(preg_replace("/\ {2,}/", " ", $str));
-	if ($sql) $str = mysql_real_escape_string($str);
+	
+	# mysql
+	//if ($sql) $str = mysql_real_escape_string($str);
+	
+	# mysqli
+	if ($sql) $str = $CI->db->escape_str($str);
 	
 	return $str;
 }

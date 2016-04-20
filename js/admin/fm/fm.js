@@ -11,22 +11,17 @@
 			
 			if ( ! $.fn.dialog) return;
 
-			D = $().dialog({
+			D = $('<div class=""></div>').dialog({
 				width:'800px',
 				height:'400px',
 				title:'Менеджер файлов',
 				drag:true,
 				resizable:true 
-			}).dialog('load').one('dialogClose', methods.exit);
+			})
+			.dialog('load')
+			.one('dialogClose', methods.exit);
 			
 			methods.create();
-			
-			// if ( ! $('link[data-fm="css"]').length){
-				// var link = $('<link type="text/css" rel="stylesheet" data-fm="css" href="'+path+'?css">').load(methods.create);
-				// $(document).find('head').append(link);
-			// }else{
-				// methods.create();
-			// }
 		},
 		
 		create:function(){

@@ -1,10 +1,49 @@
 /* LOG
 ---------------------------------------------------------------------------*/
 function log(){
-	// (window.console && window.console.log ? console.log : alert)(Array.prototype.join.call(arguments, ' '));
-	for (var i in arguments)
-		(window.console && window.console.log ? console.log : alert)(arguments[i]);
+	if (window.console && window.console.log) for (var i in arguments) console.log(arguments[i]);
 }
+
+/* SHOW_ERROR
+---------------------------------------------------------------------------*/
+function show_error(info, data){
+	
+	var html = '';
+	
+	if ($.isArray(data)){
+		html += '<ol>';
+		for (var i in data) html += '<li>'+data[i]+'</li>';
+		html += '<ol>';
+	}else{
+		html = data;
+	}
+	
+	$('<div><p>'+ (info || '') +'</p>'+ (html || '') +'</div>').dialog({
+		title:'<i class="icon-warning-sign"></i> Внимание!',
+		width:'300px',
+		drag:true
+	});
+}
+
+/* AJAX loading (gif)
+---------------------------------------------------------------------------*/
+;(function($){
+	$.each(["post"], function(i, method){		// ["post", "get"]
+		var old = $[method];
+		
+		$[method] = function(){
+			if (arguments[arguments.length-1] == "loading"){
+				var l = $('<div class="load"></div>').appendTo(document.body);
+			}
+			
+			return old.apply(this, arguments).always(function(){
+				l && l.remove();
+			})
+		}
+		
+	});
+})(jQuery);
+
 
 /* MASK
 ---------------------------------------------------------------------------*/
@@ -66,7 +105,7 @@ $(function(){
 				ui.helper.eq(0).find('td').eq(i).css({width: $(this).outerWidth() + 'px'})
 			});
 		}
-	}).bind('sortupdate', function(e, ui){
+	}).on('sortupdate', function(e, ui){
 		var _this = $(this);
 		_this.find('[data-sortable="order"]').each(function(i){
 			this.value = i;
@@ -75,7 +114,7 @@ $(function(){
 	});
 	
 	// BUTTON ORDER
-	$('[data-sortable="send-order"]').click(function(e){
+	$('[data-sortable="send-order"]').on('click', function(e){
 		e.preventDefault();
 		var _this = $(this);
 		
@@ -100,7 +139,6 @@ $(document).on('click', '[data-delete]', function(e){
 	var confirm = $('<p>Удалить <b>'+ _this.attr('data-delete') +'</b>?</p>').dialog({
 		type:'confirm',
 		width:'300px',
-		height:'auto',
 		title:'Удаление',
 		drag:true
 	}).on('dialogConfirmAgree', function(){
@@ -238,40 +276,42 @@ var AP = {
 	}
 }
 
-/* _READER
+/* FILE READER
 ---------------------------------------------------------------------------*/
-var Read = {
-	init:function(file, callback){
-		if ( ! file) return;
-		if ( !window.File && !window.FileReader && !window.FileList && !window.Blob){
-			callback(0);
-		}
-		var reader = new FileReader();
-		reader.onload = function(e){
+;(function($){
+	$.fileReader = function(file, callback){
+		callback = $.isFunction(callback) ? callback : new Function;
+
+		if ( !file || !window.FileReader ) return callback(0);
+		
+		var r = new FileReader();
+		r.onload = function(e){
 			var img = new Image();
 			img.onload = function(){
 				callback({src:e.target.result,width:img.width,height:img.height});
 			}
 			img.src = e.target.result;
 		}
-		reader.onerror = function(e){
-			callback(0);
-		}
+		r.onerror = callback;
 		
-		reader.readAsDataURL(file)
+		r.readAsDataURL(file)
 	}
-}
+})(jQuery);
+
 
 /* FM
 ---------------------------------------------------------------------------*/
-$(document).on('click.filemanager', '.FM-overview', function(e){
+$(document)
+.on('click.filemanager', '.FM-overview', function(e){
 	e.preventDefault();
 	$(this).FM();
-}).on('click.filemanager', '.FM-clear', function(e){
+})
+.on('click.filemanager', '.FM-clear', function(e){
 	e.preventDefault();
 	var _this = $(this);
 	_this.parent().find('img').attr('src','/img/i_admin/loading_mini.gif');
 	_this.parent().find('input').val('');
-}).on('dblclick.filemanager', '.mce-combobox input.mce-textbox', function(e){
+})
+.on('dblclick.filemanager', '.mce-combobox input.mce-textbox', function(e){
 	$(this).FM();
 });
