@@ -79,7 +79,7 @@ $(function(){
 					
 				}, 'json', 'loading')
 				.fail(function(){
-					show_error('Ошибка', ['Ошибка при добавлении товара']);
+					show_error('Ошибка', ['Ошибка при добавлении']);
 				});
 			});
 			
@@ -114,7 +114,7 @@ $(function(){
 					
 				}, 'json', 'loading')
 				.fail(function(){
-					show_error('Ошибка', ['Ошибка при редактировании товара']);
+					show_error('Ошибка', ['Ошибка при редактировании']);
 				});
 			});
 			
@@ -144,7 +144,7 @@ $(document).on('click', '[data-bind="delete_product"]', function(e){
 		
 		}, 'json', 'loading')
 		.fail(function(err){
-			show_error('Ошибка', ['Ошибка при удалении товара']);
+			show_error('Ошибка', ['Ошибка при удалении']);
 		});
 	});
 });

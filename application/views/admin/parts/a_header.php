@@ -31,11 +31,6 @@
 				<li>
 					<span class="has-child">Склад</span>
 					<ul>
-						<!--
-						<li>
-							<a class="<?=$action == 'category'?'activ':'';?>" href="/admin/category">Категории</a>
-						</li>
-						-->
 						<li>
 							<a class="<?=$action == 'products'?'activ':'';?>" href="/admin/products">Товары</a>
 						</li>
@@ -59,11 +54,23 @@
 					</ul>
 				</li>
 				<li>
+					<span class="has-child">Реквизиты</span>
+					<ul>
+						<li>
+							<a class="<?=$action == 'buy'?'activ':'';?>" href="/admin/supplier">Поставщики</a>
+						</li>
+					</ul>
+				</li>
+				
+				
+				<li>
 					<a class="<?=$action == 'settings'?'activ':'';?>" href="/admin/settings" title="Настройки"><i class="icon-cogs"></i></a>
 				</li>
+				<!--
 				<li>
 					<a class="FM-overview" href="#" title="Файлы"><i class="icon-picture"></i></a>
 				</li>
+				-->
 				
 				<li class="logout">
 					<a title="Выход" href="/admin/?logout" title="Выход"><i class="icon-signout"></i></a>

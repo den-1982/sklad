@@ -26,6 +26,7 @@ class Admin extends CI_Controller {
 				'admin/filterModel',
 				'admin/filesModel',
 				'admin/invoiceModel',
+				'admin/supplierModel',
 				'admin/jstreeModel'
 			)
 		);
@@ -540,6 +541,87 @@ class Admin extends CI_Controller {
 		
 		
 		$this->_view('a_invoices', $data);
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SUPPLIERS
+	public function Supplier()
+	{
+		$data = &$this->data;
+
+		$data['path']		= '/admin/supplier/';
+		$data['action']   	= 'supplier';
+		$data['act']      	= 'all';
+		$data['h1']     	= 'Поставщики';
+		
+		if (isset($_POST['getSuppliers'])){
+			$data['suppliers'] = $this->supplierModel->getSuppliers();
+			echo json_encode(
+				array('suppliers' => $this->load->view('/admin/service/suppliers-format-tr.php', $data, true))
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getSupplier'])){
+			$data['supplier'] = $this->supplierModel->getSupplier($_POST['getSupplier']);
+			echo json_encode(
+				array('supplier' => $this->load->view('/admin/service/supplier.php', $data, true))
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getFormAddSupplier'])){
+			echo json_encode(
+				array(
+					'form_add_supplier' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-supplier.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getFormEditSupplier'])){
+			$supplier_id = isset($_POST['supplier_id']) ? abs((int)$_POST['supplier_id']): 0;
+			
+			$data['supplier'] = $this->supplierModel->getSupplier($supplier_id);
+			echo json_encode(
+				array(
+					'form_edit_supplier' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-supplier.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		if (isset($_POST['supplier_order'])){
+			echo json_encode(
+				$this->supplierModel->sortOrderSuppliers()
+			);
+			exit;
+		}
+		
+		if (isset($_POST['add_supplier'])){
+			echo json_encode(
+				$this->supplierModel->addSupplier()
+			);
+			exit;
+		}
+		
+		if (isset($_POST['update_supplier'])){
+			echo json_encode(
+				$this->supplierModel->updateSupplier()
+			);
+			exit;
+		}
+
+		if (isset($_POST['delete_supplier'])){
+			echo json_encode(
+				$this->supplierModel->delSupplier($_POST['delete_supplier'])
+			);
+			exit;
+		}
+		
+		
+		$data['suppliers'] = $this->supplierModel->getSuppliers();
+		$data['suppliers'] = $this->load->view('/admin/service/suppliers-format-tr.php', $data, true);
+		
+		$this->_view('a_supplier', $data);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// FILTER
 	public function Filter()
