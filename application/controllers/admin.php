@@ -24,7 +24,6 @@ class Admin extends CI_Controller {
 				'admin/categoryModel',
 				'admin/productModel',
 				'admin/filterModel',
-				'admin/filterModel',
 				'admin/filesModel',
 				'admin/invoiceModel',
 				'admin/jstreeModel'
@@ -485,7 +484,59 @@ class Admin extends CI_Controller {
 		$data['act']      	= 'all';
 		$data['h1']     	= 'Накладная';
 		
+		$data['type'] = array('buy', 'sale');
 		
+		if (isset($_POST['getInvoices'])){
+			$data['invoices'] = $this->invoiceModel->gettInvoices();
+			 echo json_encode(
+				array(
+					'invoices' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/invoces-format-tr.php', $data, true))
+				)
+			);
+		}
+		
+		if (isset($_POST['getFormAddInvoice'])){
+			echo json_encode(
+				array(
+					'form_add_invoice' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-invoice.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getFormEditInvoice'])){
+			$invoice_id = isset($_POST['invoice_id']) ? abs((int)$_POST['invoice_id']): 0;
+			
+			$data['invoice'] = $this->invoiceModel->getProduct($invoice_id);
+			echo json_encode(
+				array(
+					'form_edit_invoice' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-invoice.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		
+		if (isset($_POST['add_invoice'])){
+			echo json_encode(
+				$this->invoiceModel->addInvoice()
+			);
+			exit;
+		}
+		
+		if (isset($_POST['update_invoice'])){
+			echo json_encode(
+				$this->invoiceModel->updateInvoice()
+			);
+			exit;
+		}
+
+		if (isset($_POST['delete_invoice'])){
+			echo json_encode(
+				$this->invoiceModel->delInvoice($_POST['delete_invoice'])
+			);
+			exit;
+		}
 		
 		
 		$this->_view('a_invoices', $data);

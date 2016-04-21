@@ -5,7 +5,7 @@
 	<div class="nav">
 		<div class="fleft"></div>
 		<div class="fright">
-			<a class="button green" href="<?=$path?>?add&parent=<?=$parent?>" title="добавить">добавить</a>
+			<a class="button green" data-bind="add_product" href="" title="добавить">Создать товар</a>
 		</div>
 	</div>
 
@@ -33,7 +33,7 @@
 							<td class="small nowrap">Серийный номер</td>
 							<td class="small"></td>
 							<td class="small">
-								<a class="link_add" data-bind="add_product" title="Добавить товар"></a>
+								<a class="link_add" data-bind="add_product" title="Создать товар"></a>
 							</td>
 						</tr>
 					</thead>

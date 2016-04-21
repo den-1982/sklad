@@ -1,11 +1,11 @@
 <div class="body">
 	
-	<h1 class="title"><?=$h1?> <?=time()?></h1>
+	<h1 class="title"><?=$h1?></h1>
 	
 	<div class="nav">
 		<div class="fleft"></div>
 		<div class="fright">
-			<a class="button green" href="<?=$path?>?add&parent=<?=$parent?>" title="добавить">добавить</a>
+			<a class="button green" data-bind="add_invoice" href="" title="Создать накладную">Создать накладную</a>
 		</div>
 	</div>
 
@@ -14,53 +14,39 @@
 		<thead>
 			<tr>
 				<td class="small">№</td>
-				<td class="small">
-					<a class="icon-save send-order" data-sortable="send-order" title="применить сортировку"></a>
-				</td>
-				<td>Название</td>
-				<td class="small nowrap">Серийный номер</td>
+				<td class="small">Дата</td>
+				<td>Тип</td>
 				<td class="small"></td>
 				<td class="small">
-					<a class="link_add" data-bind="add_product" title="Добавить товар"></a>
+					<a class="link_add" data-bind="add_invoice" title="Создать накладную"></a>
 				</td>
 			</tr>
 		</thead>
-		<tbody id="products" data-sortable="body"></tbody>
+		<tbody id="invoices"></tbody>
 	</table>
 	
 </div><!--END ID=BODY-->
 
 
-<script> // ADD PRODUCT
+<script> // ADD INVOICE
 $(function(){
-	$(document).on('click', '[data-bind="add_product"]', function(e){
+	$(document).on('click', '[data-bind="add_invoice"]', function(e){
 		e.preventDefault();
 		
-		try{
-			var category_id = $.jstree.reference('#tree-category').get_selected();
-			category_id = (!category_id.length || category_id.length > 1) ? 0 : +category_id[0];
-		}catch(e){
-			log(e.message);
-		}
-		
-		if ( ! category_id)
-			return show_error('Не выбрана категория!');
-		
-		$.post('/admin/products', {getFormAddProduct:'', category_id:category_id}, function(data){
-			$(data['form_add_product']).dialog({
+		$.post('/admin/invoice', {getFormAddInvoice:''}, function(data){
+			
+			$(data['form_add_invoice']).dialog({
 				type:'confirm',
-				title:'Добавить товар',
+				title:'Создать накладную',
 				width:'90%',
 				drag:true
 			})
 			.on('dialogConfirmAgree', function(a,b){
 				var form = $(this).data('dialog').dialog.find('form');
-				$.post('/admin/products/', form.serialize(), function(response){
+				$.post('/admin/invoice/', form.serialize(), function(response){
 					
 					if (response['error'])
 						return show_error('Ошибка', response['error']);
-					
-					$.jstree.reference('#tree-category').refresh();
 					
 				}, 'json', 'loading')
 				.fail(function(){
@@ -69,14 +55,14 @@ $(function(){
 			});
 			
 		}, 'json', 'loading')
-		.fail(function(err){
+		.fail(function(){
 			show_error('Ошибка', ['ошибка при получении формы']);
 		});
 	});
 });
 </script>
 
-<script> // EDIT PRODUCT
+<script> // EDIT INVOICE
 $(function(){
 	$(document).on('click', '[data-bind="edit_product"]', function(e){
 		e.preventDefault();
@@ -111,7 +97,7 @@ $(function(){
 });
 </script>
 
-<script> // DELETE PRODUCT
+<script> // DELETE INVOICE
 $(document).on('click', '[data-bind="delete_product"]', function(e){
 	e.preventDefault();
 	
