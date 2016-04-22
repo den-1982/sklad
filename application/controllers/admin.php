@@ -27,6 +27,7 @@ class Admin extends CI_Controller {
 				'admin/filesModel',
 				'admin/invoiceModel',
 				'admin/supplierModel',
+				'admin/unitModel',
 				'admin/jstreeModel'
 			)
 		);
@@ -76,7 +77,7 @@ class Admin extends CI_Controller {
 		return array_reverse($crumbs);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// URL (NEW)
-	private function _getParents($parents, $not = 0, $parent_id = 0, $parent_name = '', $level = -1) 
+	private function _getParents($parents, $not = 0, $parent_id = 1, $parent_name = '', $level = -1) 
 	{
 		$output = array();
 		$level++;
@@ -91,13 +92,12 @@ class Admin extends CI_Controller {
 				if($parent->id == $not) continue;
 				
 				$output[$parent->id] = array(
-					'id' => $parent->id,
-					'name' => $parent_name . $parent->name,
-					'_name'=>$parent->name,
-					'level'=>$level
+					'id'	=> $parent->id,
+					'name'	=>  $parent_name . $parent->nm,
+					'level'	=> $level
 				);
 				
-				$output += $this->_getParents($parents, $not, $parent->id, $parent_name . $parent->name, $level);
+				$output += $this->_getParents($parents, $not, $parent->id, $parent_name . $parent->nm, $level);
 			}
 		}
 		return $output;
@@ -409,6 +409,7 @@ class Admin extends CI_Controller {
 		
 		if (isset($_POST['getFormAddProduct'])){
 			$data['category_id'] = isset($_POST['category_id']) ? abs((int)$_POST['category_id']) : 0;
+			$data['categories'] = $this->categoryModel->getCategoryTree();
 			echo json_encode(
 				array(
 					'form_add_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-product.php', $data, true))
@@ -420,6 +421,7 @@ class Admin extends CI_Controller {
 		if (isset($_POST['getFormEditProduct'])){
 			$product_id = isset($_POST['product_id']) ? abs((int)$_POST['product_id']): 0;
 			$data['product'] = $this->productModel->getProduct($product_id);
+			$data['categories'] = $this->categoryModel->getCategoryTree();
 			echo json_encode(
 				array(
 					'form_edit_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-product.php', $data, true))
@@ -472,6 +474,7 @@ class Admin extends CI_Controller {
 			);
 			exit;
 		}
+		
 		
 		$this->_view('a_products', $data);
 	}
@@ -732,8 +735,6 @@ class Admin extends CI_Controller {
 	public function Test()
 	{	
 		phpinfo();
-		exit;
-		
 	}
 	
 }

@@ -1051,7 +1051,8 @@ class jstreeModel extends CI_Model
 	}
 	
 	# dump
-	public function dump() {
+	public function dump() 
+	{
 		$nodes = $this->db->get("
 			SELECT
 				s.".implode(", s.", $this->options['structure']).",
