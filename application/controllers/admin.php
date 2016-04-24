@@ -27,6 +27,7 @@ class Admin extends CI_Controller {
 				'admin/filesModel',
 				'admin/invoiceModel',
 				'admin/supplierModel',
+				'admin/sizeModel',
 				'admin/unitModel',
 				'admin/jstreeModel'
 			)
@@ -409,10 +410,11 @@ class Admin extends CI_Controller {
 		
 		if (isset($_POST['getFormAddProduct'])){
 			$data['category_id'] = isset($_POST['category_id']) ? abs((int)$_POST['category_id']) : 0;
-			$data['categories'] = $this->categoryModel->getCategoryTree();
+			$data['categories']	= $this->categoryModel->getCategoryTree();
+			$data['sizes']		= $this->sizeModel->getSizes();
 			echo json_encode(
 				array(
-					'form_add_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-product.php', $data, true))
+					'form_add_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/products/form-add-product.php', $data, true))
 				)
 			);
 			exit;
@@ -420,11 +422,12 @@ class Admin extends CI_Controller {
 		
 		if (isset($_POST['getFormEditProduct'])){
 			$product_id = isset($_POST['product_id']) ? abs((int)$_POST['product_id']): 0;
-			$data['product'] = $this->productModel->getProduct($product_id);
+			$data['product']	= $this->productModel->getProduct($product_id);
 			$data['categories'] = $this->categoryModel->getCategoryTree();
+			$data['sizes']		= $this->sizeModel->getSizes();
 			echo json_encode(
 				array(
-					'form_edit_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-product.php', $data, true))
+					'form_edit_product' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/products/form-edit-product.php', $data, true))
 				)
 			);
 			exit;
@@ -433,7 +436,7 @@ class Admin extends CI_Controller {
 		if (isset($_POST['get_products_of_categories'])){
 			$data['products'] = $this->productModel->getProductsOfCategories($_POST['get_products_of_categories']);
 			if (isset($_POST['format']) && $_POST['format'] == 'tr'){
-				$data['products'] = preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/products-format-tr', $data, true));
+				$data['products'] = preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/products/products-format-tr', $data, true));
 			}
 			
 			header('Content-Type: application/json; charset=utf-8');
@@ -494,7 +497,7 @@ class Admin extends CI_Controller {
 			$data['invoices'] = $this->invoiceModel->gettInvoices();
 			 echo json_encode(
 				array(
-					'invoices' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/invoces-format-tr.php', $data, true))
+					'invoices' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/invoice/invoices-format-tr.php', $data, true))
 				)
 			);
 		}
@@ -502,7 +505,7 @@ class Admin extends CI_Controller {
 		if (isset($_POST['getFormAddInvoice'])){
 			echo json_encode(
 				array(
-					'form_add_invoice' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-invoice.php', $data, true))
+					'form_add_invoice' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/invoice/form-add-invoice.php', $data, true))
 				)
 			);
 			exit;
@@ -514,7 +517,7 @@ class Admin extends CI_Controller {
 			$data['invoice'] = $this->invoiceModel->getProduct($invoice_id);
 			echo json_encode(
 				array(
-					'form_edit_invoice' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-invoice.php', $data, true))
+					'form_edit_invoice' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/invoice/form-edit-invoice.php', $data, true))
 				)
 			);
 			exit;
@@ -566,7 +569,7 @@ class Admin extends CI_Controller {
 		if (isset($_POST['getSupplier'])){
 			$data['supplier'] = $this->supplierModel->getSupplier($_POST['getSupplier']);
 			echo json_encode(
-				array('supplier' => $this->load->view('/admin/service/supplier.php', $data, true))
+				array('supplier' => $this->load->view('/admin/service/supplier/supplier.php', $data, true))
 			);
 			exit;
 		}
@@ -574,7 +577,7 @@ class Admin extends CI_Controller {
 		if (isset($_POST['getFormAddSupplier'])){
 			echo json_encode(
 				array(
-					'form_add_supplier' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-add-supplier.php', $data, true))
+					'form_add_supplier' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/supplier/form-add-supplier.php', $data, true))
 				)
 			);
 			exit;
@@ -586,7 +589,7 @@ class Admin extends CI_Controller {
 			$data['supplier'] = $this->supplierModel->getSupplier($supplier_id);
 			echo json_encode(
 				array(
-					'form_edit_supplier' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/form-edit-supplier.php', $data, true))
+					'form_edit_supplier' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/supplier/form-edit-supplier.php', $data, true))
 				)
 			);
 			exit;
@@ -622,9 +625,80 @@ class Admin extends CI_Controller {
 		
 		
 		$data['suppliers'] = $this->supplierModel->getSuppliers();
-		$data['suppliers'] = $this->load->view('/admin/service/suppliers-format-tr.php', $data, true);
+		$data['suppliers'] = $this->load->view('/admin/service/supplier/suppliers-format-tr.php', $data, true);
 		
 		$this->_view('a_supplier', $data);
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SIZE
+	public function Size()
+	{
+		$data = &$this->data;
+		
+		$data['path']		= '/admin/size/';
+		$data['action']   	= 'size';
+		$data['act']      	= 'all';
+		$data['h1']     	= 'Размеры';
+		
+		if (isset($_POST['getFormAddSize'])){
+			echo json_encode(
+				array(
+					'form_add_size' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/size/form-add-size.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getFormEditSize'])){
+			$size_id = isset($_POST['size_id']) ? abs((int)$_POST['size_id']): 0;
+			
+			$data['size'] = $this->sizeModel->getSize($size_id);
+			echo json_encode(
+				array(
+					'form_edit_size' => preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/size/form-edit-size.php', $data, true))
+				)
+			);
+			exit;
+		}
+		
+		if (isset($_POST['getSizes'])){
+			$data['sizes'] = $this->sizeModel->getSizes();
+			$data['sizes'] = preg_replace('/\s+/u', ' ', $this->load->view('/admin/service/size/size-format-tr', $data, true));
+			echo json_encode(array('sizes' => $data['sizes']));
+			exit;
+		}
+		
+		
+		if (isset($_POST['size_order'])){
+			$this->sizeModel->setOrderSize();
+			exit;
+		}
+		
+		if (isset($_POST['update_size'])){
+			echo json_encode(
+				$this->sizeModel->updateSize()
+			);
+			exit;
+		}
+		
+		if (isset($_POST['add_size'])){
+			echo json_encode(
+				$this->sizeModel->addSize()
+			);
+			exit;
+		}
+
+		if (isset($_POST['delete_size'])){
+			echo json_encode(
+				$this->sizeModel->deleteSize($_POST['delete_size'])
+			);
+			exit;
+		}
+		
+		$data['sizes'] = $this->sizeModel->getSizes();
+		$data['sizes'] = $this->load->view('/admin/service/size/size-format-tr', $data, true);
+		
+
+		$this->_view('a_size', $data);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// FILTER
 	public function Filter()

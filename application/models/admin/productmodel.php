@@ -4,48 +4,14 @@
 */
 class productModel extends CI_Model
 {
-	public function getProductsOfCategories($ids = 0)
-	{
-		$ids = explode(':', $ids);
-		
-		$arrIds = array();
-		foreach ($ids as $k){
-			$arrIds[] =  abs((int) $k);
-		}
-		
-		if ( ! count($arrIds)) return array();
-		
-		$products = $this->db->query('
-			SELECT 
-				p.*, 
-				"image" AS image 
-			FROM products p 
-			WHERE p.category_id IN ('.join($arrIds, ',').') 
-			ORDER BY p.order ASC
-		')->result();
-		
-		return $products;
-	}
-	
-	
-	public function getProducts($parent = 0)
-	{
-		$parent = abs((int)$parent);
-		return $this->db->query('SELECT 
-										*,
-										CONCAT("/img/products/", id, "/", id, "_82_82.jpg") AS image
-									FROM products 
-									WHERE parent = "'.$parent.'" 
-									ORDER BY `order` ASC')->result();
-	}
-	
 	public function getProduct($id = 0)
 	{
 		$product = $this->db->query('SELECT 
-											*,
-											CONCAT("/img/products/", id, "/", id, "_82_82.jpg") AS image
-										FROM products 
-										WHERE id = "'.$id.'"')->row();
+											p.*,
+											CONCAT(s.name, " ", s.prefix) AS size
+										FROM products p
+										LEFT JOIN size s ON p.size_id = s.id
+										WHERE p.id = "'.$id.'"')->row();
 		
 		if ( ! $product) return array();
 
@@ -62,17 +28,58 @@ class productModel extends CI_Model
 		return $product;
 	}
 	
+	public function getProductsOfCategories($ids = 0)
+	{
+		$ids = explode(':', $ids);
+		
+		$arrIds = array();
+		foreach ($ids as $k){
+			$arrIds[] =  abs((int) $k);
+		}
+		
+		if ( ! count($arrIds)) return array();
+		
+		$products = $this->db->query('
+			SELECT 
+				p.*,
+				c.nm AS category_name,
+				CONCAT(p.name, " ", s.name, " ", s.prefix) AS _name,
+				CONCAT(s.name, " ", s.prefix) AS size,
+				"image" AS image 
+			FROM products p 
+			LEFT JOIN size s ON p.size_id = s.id
+			LEFT JOIN category c ON c.id = p.category_id
+			WHERE p.category_id IN ('.join($arrIds, ',').') 
+			ORDER BY p.order ASC
+		')->result();
+		
+		return $products;
+	}
+	
+	public function getProducts($parent = 0)
+	{
+		$parent = abs((int)$parent);
+		return $this->db->query('SELECT 
+										*,
+										CONCAT("/img/products/", id, "/", id, "_82_82.jpg") AS image
+									FROM products 
+									WHERE parent = "'.$parent.'" 
+									ORDER BY `order` ASC')->result();
+	}
+	
 	public function addProduct()
 	{
 		$category_id	= isset($_POST['category_id'])	? abs((int)$_POST['category_id']) : 0;
 		$name			= isset($_POST['name'])		? clean($_POST['name'], true, true) : '';
 		$serial_number 	= isset($_POST['serial_number']) ? clean($_POST['serial_number'], true, true) : '';
+		$size_id		= isset($_POST['size_id']) 			? abs((int)$_POST['size_id']) : 0;
 		
-		$this->db->query('INSERT INTO products (category_id, name, serial_number) 
+		$this->db->query('INSERT INTO products (category_id, name, serial_number, size_id) 
 							   VALUES (
 								"'.$category_id.'", 
 								"'.$name.'",  
-								"'.$serial_number.'"
+								"'.$serial_number.'",
+								"'.$size_id.'"
 							)');
 		
 		# ID
@@ -140,13 +147,14 @@ class productModel extends CI_Model
 		$category_id	= isset($_POST['category_id'])		? abs((int)$_POST['category_id']) : 0;
 		$name			= isset($_POST['name'])				? clean($_POST['name'], true, true) : '';
 		$serial_number 	= isset($_POST['serial_number'])	? clean($_POST['serial_number'], true, true) : '';
-
+		$size_id		= isset($_POST['size_id']) 			? abs((int)$_POST['size_id']) : 0;
 		
 		$this->db->query('UPDATE products 
 							SET 
 								category_id		= "'.$category_id.'",
 								name			= "'.$name.'",
-								serial_number	= "'.$serial_number.'"
+								serial_number	= "'.$serial_number.'",
+								size_id			= "'.$size_id.'"
 							WHERE id = "'.$id.'"');
 		
 		# FILTER_ITEM (id_filter_item) значения фильтров
@@ -230,5 +238,6 @@ class productModel extends CI_Model
 
 		return true;
 	}
+	
 	
 }

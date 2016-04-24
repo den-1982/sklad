@@ -29,8 +29,10 @@
 							<td class="small">
 								<a class="icon-save send-order" data-sortable="send-order" title="применить сортировку"></a>
 							</td>
-							<td>Название</td>
-							<td class="small nowrap">Серийный номер</td>
+							<td class="small nowrap">Код товара</td>
+							<td class="">Название</td>
+							<td class="small">Размер</td>
+							<td class="small nowrap">Склад (кол.)</td>
 							<td class="small"></td>
 							<td class="small">
 								<a class="link_add" data-bind="add_product" title="Создать товар"></a>

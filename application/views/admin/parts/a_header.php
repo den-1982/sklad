@@ -35,10 +35,7 @@
 							<a class="<?=$action == 'products'?'activ':'';?>" href="/admin/products">Товары</a>
 						</li>
 						<li>
-							<a class="<?=$action == 'filter'?'activ':'';?>" href="/admin/filter">Фильтр</a>
-						</li>
-						<li>
-							<a class="<?=$action == 'manufacturer'?'activ':'';?>" href="/admin/manufacturer">Производители</a>
+							<a class="<?=$action == 'filter'?'activ':'';?>" href="/admin/size">Размеры</a>
 						</li>
 					</ul>
 				</li>

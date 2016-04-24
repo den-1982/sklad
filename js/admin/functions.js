@@ -105,7 +105,8 @@ $(function(){
 				ui.helper.eq(0).find('td').eq(i).css({width: $(this).outerWidth() + 'px'})
 			});
 		}
-	}).on('sortupdate', function(e, ui){
+	})
+	.on('sortupdate', function(e, ui){
 		var _this = $(this);
 		_this.find('[data-sortable="order"]').each(function(i){
 			this.value = i;
